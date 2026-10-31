@@ -4,406 +4,401 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>micro:bit Party Point Arena</title>
-    <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap');
+        :root {
+            --bg-color: #090d16;
+            --card-bg: #131d31;
+            --card-border: #1e293b;
+            --accent: #38bdf8;
+            --active-glow: rgba(16, 185, 129, 0.3);
+            --active-border: #10b981;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+        }
+
         body {
-            font-family: 'Inter', sans-serif;
-            background-color: #070a12;
-            color: #f8fafc;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 40px 20px;
         }
-        .glow-active {
-            border-color: #10b981 !important;
-            box-shadow: 0 0 25px rgba(16, 185, 129, 0.35), inset 0 0 15px rgba(16, 185, 129, 0.1);
+
+        h1 {
+            color: var(--accent);
+            font-size: 28px;
+            margin-bottom: 5px;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
         }
-        .glow-accent {
-            box-shadow: 0 0 20px rgba(56, 189, 248, 0.25);
+
+        .subtitle {
+            color: var(--text-muted);
+            font-size: 14px;
+            margin-bottom: 25px;
         }
-        .badge-active {
-            animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+
+        .toolbar {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 30px;
         }
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: .6; }
+
+        .btn {
+            background-color: #0284c7;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            font-size: 15px;
+            font-weight: 600;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 12px rgba(2, 132, 199, 0.3);
         }
-        ::-webkit-scrollbar {
-            width: 6px;
+
+        .btn:hover { background-color: #0369a1; transform: translateY(-1px); }
+        .btn.connected { background-color: #10b981; box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3); }
+        .btn.secondary { background-color: #334155; box-shadow: none; }
+        .btn.secondary:hover { background-color: #475569; }
+
+        .container {
+            width: 100%;
+            max-width: 550px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
         }
-        ::-webkit-scrollbar-track {
-            background: #0f172a;
+
+        .player-card {
+            background: var(--card-bg);
+            border: 2px solid var(--card-border);
+            border-radius: 14px;
+            padding: 18px 22px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+            cursor: pointer;
         }
-        ::-webkit-scrollbar-thumb {
-            background: #334155;
-            border-radius: 3px;
+
+        .player-card.active {
+            border-color: var(--active-border);
+            box-shadow: 0 0 25px var(--active-glow);
+            transform: scale(1.02);
         }
+
+        .turn-badge {
+            position: absolute;
+            top: -10px;
+            right: 20px;
+            background: #10b981;
+            color: white;
+            font-size: 10px;
+            font-weight: bold;
+            padding: 3px 10px;
+            border-radius: 20px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            display: none;
+        }
+
+        .player-card.active .turn-badge { display: block; }
+
+        .player-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            flex: 1;
+        }
+
+        .name-input {
+            background: transparent;
+            border: none;
+            color: var(--text-main);
+            font-size: 20px;
+            font-weight: 700;
+            width: 150px;
+            outline: none;
+            padding: 4px;
+            border-radius: 4px;
+        }
+        .name-input:focus { background: rgba(255,255,255,0.05); }
+
+        .score-box {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .score-value {
+            font-size: 26px;
+            font-weight: 800;
+            color: var(--accent);
+            min-width: 50px;
+            text-align: right;
+        }
+
+        .score-btn {
+            background: #1e293b;
+            color: var(--text-main);
+            border: none;
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .score-btn:hover { background: #334155; }
+        .score-btn.plus { background: #059669; }
+        .score-btn.plus:hover { background: #047857; }
+
+        .delete-btn {
+            background: transparent;
+            border: none;
+            color: #64748b;
+            font-size: 16px;
+            cursor: pointer;
+            padding: 5px;
+            transition: color 0.2s;
+        }
+        .delete-btn:hover { color: #ef4444; }
+
+        .terminal-box {
+            width: 100%;
+            max-width: 550px;
+            margin-top: 25px;
+            background: #0d1424;
+            border: 1px solid var(--card-border);
+            border-radius: 10px;
+            padding: 15px;
+            box-sizing: border-box;
+        }
+
+        .terminal {
+            font-family: monospace;
+            font-size: 12px;
+            color: #34d399;
+            height: 90px;
+            overflow-y: auto;
+            margin-bottom: 10px;
+        }
+
+        .input-row {
+            display: flex;
+            gap: 10px;
+        }
+
+        .test-input {
+            flex: 1;
+            background: #131d31;
+            border: 1px solid var(--card-border);
+            color: var(--text-main);
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 13px;
+            outline: none;
+        }
+
+        .send-btn {
+            background: #6366f1;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        .send-btn:hover { background: #4f46e5; }
     </style>
 </head>
-<body class="min-h-screen flex flex-col items-center justify-between p-4 sm:p-6 md:p-8">
+<body>
 
-    <!-- Header Section -->
-    <header class="w-full max-w-xl text-center mb-6">
-        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-slate-900 border border-slate-800 text-xs font-semibold text-sky-400 mb-3 glow-accent">
-            <span class="w-2 h-2 rounded-full bg-sky-400 animate-ping"></span>
-            micro:bit V2 Party Arena
-        </div>
-        <h1 class="text-3xl sm:text-4xl font-extrabold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-sky-400 via-indigo-400 to-emerald-400 uppercase">
-            Point Arena
-        </h1>
-        <p class="text-xs sm:text-sm text-slate-400 mt-1">
-            Active Turn Auto-Rotation • Automated micro:bit Score Updates
-        </p>
-    </header>
+<h1>Point Arena</h1>
+<div class="subtitle">micro:bit Serial Scorekeeper</div>
 
-    <!-- Toolbar / Connection Controls -->
-    <main class="w-full max-w-xl flex-1 flex flex-col gap-6">
-        <div class="flex flex-wrap gap-3 justify-center">
-            <button id="connectSerialBtn" class="flex-1 sm:flex-initial px-4 py-3 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-sm rounded-xl transition-all shadow-lg shadow-emerald-950/50 flex items-center justify-center gap-2">
-                ⚡ Connect WebSerial
-            </button>
-            <button id="connectUsbBtn" class="flex-1 sm:flex-initial px-4 py-3 bg-sky-600 hover:bg-sky-500 text-white font-bold text-sm rounded-xl transition-all shadow-lg shadow-sky-950/50 flex items-center justify-center gap-2">
-                🔌 Connect WebUSB
-            </button>
-            <button onclick="addPlayer()" class="px-4 py-3 bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold text-sm rounded-xl border border-slate-700 transition-all">
-                + Add Player
-            </button>
-        </div>
+<div class="toolbar">
+    <button id="connectBtn" class="btn">🔌 Connect micro:bit</button>
+    <button class="btn secondary" onclick="addPlayer()">+ Add Player</button>
+</div>
 
-        <!-- Connection Status Banner -->
-        <div id="statusBanner" class="hidden w-full px-4 py-2 bg-emerald-950/60 border border-emerald-500/30 rounded-xl text-emerald-400 text-xs font-semibold flex items-center justify-between">
-            <span id="statusText">Connected to micro:bit</span>
-            <button onclick="disconnectHardware()" class="text-slate-400 hover:text-white underline">Disconnect</button>
-        </div>
+<div class="container" id="playerContainer"></div>
 
-        <!-- Player Cards Container -->
-        <div id="playerContainer" class="flex flex-col gap-4">
-            <!-- Player cards generated dynamically -->
-        </div>
+<div class="terminal-box">
+    <div class="terminal" id="terminalLog">
+        > System ready. Connect your micro:bit or type a command below.
+    </div>
+    <div class="input-row">
+        <input type="text" id="manualCmd" class="test-input" placeholder="Test command (e.g. ADD 18)..." onkeydown="if(event.key==='Enter') submitManual()">
+        <button class="send-btn" onclick="submitManual()">Send</button>
+    </div>
+</div>
 
-        <!-- Live Terminal & Manual Command Tester -->
-        <div class="w-full bg-slate-950 border border-slate-800 rounded-2xl p-4 flex flex-col gap-3 shadow-2xl">
-            <div class="flex items-center justify-between border-b border-slate-900 pb-2">
-                <div class="flex items-center gap-2">
-                    <span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
-                    <span class="text-xs font-bold text-slate-300 uppercase tracking-wider">Live System Stream</span>
+<script>
+    let players = [
+        { name: "Player 1", score: 0 },
+        { name: "Player 2", score: 0 }
+    ];
+    let activeIndex = 0;
+    let port, reader;
+
+    const container = document.getElementById('playerContainer');
+    const connectBtn = document.getElementById('connectBtn');
+    const terminalLog = document.getElementById('terminalLog');
+
+    function log(msg) {
+        terminalLog.innerHTML += `<br>> ${msg}`;
+        terminalLog.scrollTop = terminalLog.scrollHeight;
+    }
+
+    function render() {
+        container.innerHTML = '';
+        players.forEach((p, idx) => {
+            const card = document.createElement('div');
+            card.className = `player-card ${idx === activeIndex ? 'active' : ''}`;
+            card.onclick = () => setActivePlayer(idx);
+
+            card.innerHTML = `
+                <div class="turn-badge">Active Turn</div>
+                <div class="player-info" onclick="event.stopPropagation()">
+                    <input type="text" class="name-input" value="${p.name}" oninput="players[${idx}].name = this.value">
                 </div>
-                <button onclick="clearLogs()" class="text-[10px] text-slate-500 hover:text-slate-300 uppercase font-bold">Clear Log</button>
-            </div>
-
-            <!-- Scrollable Terminal Log -->
-            <div id="terminalLog" class="h-28 overflow-y-auto font-mono text-xs text-emerald-400 space-y-1">
-                <div class="text-slate-500">> System initialized. Ready for micro:bit buttons or manual input.</div>
-            </div>
-
-            <!-- Manual Input Command Simulator -->
-            <form onsubmit="handleManualSubmit(event)" class="flex gap-2 pt-2 border-t border-slate-900">
-                <input type="text" id="manualInput" placeholder="Test command (e.g. ADD 18, SUB 10, MULTIPLY 10)..." class="flex-1 bg-slate-900 border border-slate-800 text-slate-200 text-xs rounded-lg px-3 py-2 outline-none focus:border-sky-500 font-mono" />
-                <button type="submit" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs rounded-lg transition-all">
-                    Send
-                </button>
-            </form>
-        </div>
-    </main>
-
-    <footer class="mt-8 text-center text-xs text-slate-600">
-        micro:bit Party Scorekeeper &bull; Compatible with Chrome &amp; Chromebooks
-    </footer>
-
-    <script>
-        // State variables
-        let players = [
-            { id: 1, name: "Ella", score: 0 },
-            { id: 2, name: "Charlie", score: 0 }
-        ];
-        let activeIndex = 0;
-        let serialPort = null;
-        let serialReader = null;
-        let usbDevice = null;
-
-        const container = document.getElementById('playerContainer');
-        const terminalLog = document.getElementById('terminalLog');
-        const statusBanner = document.getElementById('statusBanner');
-        const statusText = document.getElementById('statusText');
-
-        // Log messages to on-screen terminal
-        function log(msg, type = 'info') {
-            const entry = document.createElement('div');
-            if (type === 'error') entry.className = 'text-rose-400';
-            else if (type === 'action') entry.className = 'text-sky-300 font-bold';
-            else entry.className = 'text-emerald-400';
-
-            entry.textContent = `> ${msg}`;
-            terminalLog.appendChild(entry);
-            terminalLog.scrollTop = terminalLog.scrollHeight;
-        }
-
-        function clearLogs() {
-            terminalLog.innerHTML = '<div class="text-slate-500">> Log cleared.</div>';
-        }
-
-        // Render Player List
-        function render() {
-            container.innerHTML = '';
-            if (players.length === 0) {
-                container.innerHTML = `
-                    <div class="text-center p-8 border border-dashed border-slate-800 rounded-2xl text-slate-500 text-sm">
-                        No players added yet. Click "+ Add Player" to begin!
-                    </div>
-                `;
-                return;
-            }
-
-            players.forEach((p, idx) => {
-                const isActive = idx === activeIndex;
-                const card = document.createElement('div');
-                card.className = `relative flex items-center justify-between p-4 sm:p-5 rounded-2xl bg-slate-900 border-2 transition-all cursor-pointer ${
-                    isActive ? 'border-emerald-500 glow-active scale-[1.02]' : 'border-slate-800 hover:border-slate-700 opacity-80 hover:opacity-100'
-                }`;
-                card.onclick = () => setActivePlayer(idx);
-
-                card.innerHTML = `
-                    ${isActive ? '<div class="absolute -top-3 right-6 bg-emerald-500 text-slate-950 font-black text-[10px] uppercase px-3 py-0.5 rounded-full shadow-lg tracking-wider badge-active">Active Turn</div>' : ''}
-                    <div class="flex items-center gap-3 flex-1" onclick="event.stopPropagation()">
-                        <div class="w-3 h-3 rounded-full ${isActive ? 'bg-emerald-400' : 'bg-slate-700'}"></div>
-                        <input type="text" value="${escapeHtml(p.name)}" 
-                            onchange="updateName(${idx}, this.value)"
-                            class="bg-transparent text-lg sm:text-xl font-bold text-slate-100 outline-none focus:bg-slate-800/60 px-2 py-1 rounded-lg w-32 sm:w-40 border border-transparent focus:border-slate-700 transition-all" />
-                    </div>
-
-                    <div class="flex items-center gap-2 sm:gap-3" onclick="event.stopPropagation()">
-                        <button onclick="adjustScore(${idx}, -1)" class="w-9 h-9 flex items-center justify-center rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold text-lg active:scale-95 transition-all">-</button>
-                        <span class="w-14 text-center font-black text-2xl sm:text-3xl text-sky-400 font-mono">${p.score}</span>
-                        <button onclick="adjustScore(${idx}, 1)" class="w-9 h-9 flex items-center justify-center rounded-xl bg-emerald-700 hover:bg-emerald-600 text-white font-bold text-lg active:scale-95 transition-all">+</button>
-                        <button onclick="removePlayer(${idx})" class="ml-2 text-slate-600 hover:text-rose-400 p-1 font-bold text-sm transition-all" title="Remove Player">✕</button>
-                    </div>
-                `;
-                container.appendChild(card);
-            });
-        }
-
-        function escapeHtml(str) {
-            return str.replace(/[&<>"']/g, (m) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[m]));
-        }
-
-        function setActivePlayer(idx) {
-            activeIndex = idx;
-            render();
-            log(`Active turn passed to ${players[idx].name}`);
-        }
-
-        function nextTurn() {
-            if (players.length === 0) return;
-            activeIndex = (activeIndex + 1) % players.length;
-            render();
-            log(`Turn rotated to: ${players[activeIndex].name}`);
-        }
-
-        function addPlayer() {
-            const newId = players.length ? Math.max(...players.map(p => p.id)) + 1 : 1;
-            players.push({ id: newId, name: `Player ${newId}`, score: 0 });
-            render();
-        }
-
-        function removePlayer(idx) {
-            const name = players[idx].name;
-            players.splice(idx, 1);
-            if (activeIndex >= players.length) activeIndex = Math.max(0, players.length - 1);
-            render();
-            log(`Removed player: ${name}`);
-        }
-
-        function updateName(idx, val) {
-            players[idx].name = val.trim() || `Player ${idx + 1}`;
-        }
-
-        function adjustScore(idx, amount) {
-            players[idx].score += amount;
-            render();
-        }
-
-        // Core Command Engine: Parses input line & updates scores
-        function processCommand(cmd) {
-            if (!cmd || !cmd.trim()) return;
-            const cleanCmd = cmd.trim();
-            log(`Received: "${cleanCmd}"`, 'action');
-
-            if (players.length === 0) {
-                log("No players registered! Add a player to start tracking.", "error");
-                return;
-            }
-
-            const target = players[activeIndex];
-            const upper = cleanCmd.toUpperCase();
-            let parsedNumber = 0;
-
-            // Extract trailing or embedded numeric digits
-            const numMatch = upper.match(/[-+]?\d+/);
-            if (numMatch) {
-                parsedNumber = parseInt(numMatch[0], 10);
-            }
-
-            let prevScore = target.score;
-
-            if (upper.includes("ADD") || upper.includes("BONUS") || upper.startsWith("+")) {
-                const amount = parsedNumber !== 0 ? parsedNumber : 10;
-                target.score += amount;
-                log(`Added ${amount} to ${target.name} (${prevScore} -> ${target.score})`);
-            } 
-            else if (upper.includes("SUB") || upper.includes("MINUS") || upper.startsWith("-")) {
-                const amount = parsedNumber !== 0 ? Math.abs(parsedNumber) : 10;
-                target.score -= amount;
-                log(`Subtracted ${amount} from ${target.name} (${prevScore} -> ${target.score})`);
-            } 
-            else if (upper.includes("MULTIPLY") || upper.includes("MUL") || upper.includes("DOUBLE")) {
-                const multiplier = parsedNumber !== 0 ? parsedNumber : 2;
-                target.score *= multiplier;
-                log(`Multiplied ${target.name}'s score by ${multiplier} (${prevScore} -> ${target.score})`);
-            } 
-            else if (upper.includes("DIVIDE") || upper.includes("DIV")) {
-                const divisor = parsedNumber !== 0 ? parsedNumber : 2;
-                if (divisor !== 0) {
-                    target.score = Math.round(target.score / divisor);
-                    log(`Divided ${target.name}'s score by ${divisor} (${prevScore} -> ${target.score})`);
-                }
-            } 
-            else if (upper.includes("RESET")) {
-                target.score = 0;
-                log(`Reset ${target.name}'s score to 0`);
-            } 
-            else if (upper.includes("SWAP")) {
-                if (players.length > 1) {
-                    const nextIdx = (activeIndex + 1) % players.length;
-                    const temp = players[activeIndex].score;
-                    players[activeIndex].score = players[nextIdx].score;
-                    players[nextIdx].score = temp;
-                    log(`Swapped points between ${players[activeIndex].name} and ${players[nextIdx].name}!`);
-                }
-            } 
-            else if (parsedNumber !== 0) {
-                // Fallback direct integer adjustment
-                target.score += parsedNumber;
-                log(`Adjusted ${target.name} score by ${parsedNumber} (${prevScore} -> ${target.score})`);
-            } else {
-                log(`Unrecognized math command: "${cleanCmd}"`, "error");
-                return;
-            }
-
-            // Automatically advance to the next player's turn!
-            nextTurn();
-        }
-
-        function handleManualSubmit(e) {
-            e.preventDefault();
-            const input = document.getElementById('manualInput');
-            if (input.value) {
-                processCommand(input.value);
-                input.value = '';
-            }
-        }
-
-        // WebSerial Connection Strategy (Primary for micro:bit DAPLink CDC)
-        document.getElementById('connectSerialBtn').addEventListener('click', async () => {
-            if (!('serial' in navigator)) {
-                log("WebSerial is not supported in this browser. Please use Google Chrome or Edge.", "error");
-                return;
-            }
-
-            try {
-                // Prompt user to select port (Filters specifically for micro:bit Vendor ID: 0x0D28)
-                serialPort = await navigator.serial.requestPort({
-                    filters: [{ usbVendorId: 0x0D28 }]
-                });
-
-                await serialPort.open({ baudRate: 115200 });
-
-                showConnectedStatus("WebSerial: micro:bit V2 Connected");
-                log("WebSerial port opened successfully!");
-
-                const textDecoder = new TextDecoderStream();
-                serialPort.readable.pipeTo(textDecoder.writable);
-                serialReader = textDecoder.readable.getReader();
-
-                readSerialLoop();
-            } catch (err) {
-                log("WebSerial connection error: " + err.message, "error");
-            }
+                <div class="score-box" onclick="event.stopPropagation()">
+                    <button class="score-btn" onclick="adjustScore(${idx}, -1)">-</button>
+                    <div class="score-value">${p.score}</div>
+                    <button class="score-btn plus" onclick="adjustScore(${idx}, 1)">+</button>
+                    <button class="delete-btn" onclick="removePlayer(${idx})" title="Remove">✕</button>
+                </div>
+            `;
+            container.appendChild(card);
         });
+    }
 
-        async function readSerialLoop() {
-            let buffer = "";
-            try {
-                while (true) {
-                    const { value, done } = await serialReader.read();
-                    if (done) break;
-                    buffer += value;
-                    let lines = buffer.split("\n");
-                    buffer = lines.pop(); // Hold remaining incomplete line chunk
+    function setActivePlayer(idx) {
+        activeIndex = idx;
+        render();
+        log(`Active turn passed to ${players[idx].name}`);
+    }
 
-                    for (let line of lines) {
-                        processCommand(line);
+    function nextTurn() {
+        if (players.length === 0) return;
+        activeIndex = (activeIndex + 1) % players.length;
+        render();
+        log(`Turn advanced to: ${players[activeIndex].name}`);
+    }
+
+    function addPlayer() {
+        players.push({ name: `Player ${players.length + 1}`, score: 0 });
+        render();
+    }
+
+    function removePlayer(idx) {
+        players.splice(idx, 1);
+        if (activeIndex >= players.length) activeIndex = Math.max(0, players.length - 1);
+        render();
+    }
+
+    function adjustScore(idx, amount) {
+        players[idx].score += amount;
+        render();
+    }
+
+    connectBtn.addEventListener('click', async () => {
+        try {
+            port = await navigator.serial.requestPort();
+            await port.open({ baudRate: 115200 });
+
+            connectBtn.innerText = "Connected (Serial)";
+            connectBtn.classList.add('connected');
+            log("Connected to micro:bit successfully!");
+
+            const textDecoder = new TextDecoderStream();
+            port.readable.pipeTo(textDecoder.writable);
+            reader = textDecoder.readable.getReader();
+
+            readSerialLoop();
+        } catch (err) {
+            log("Connection error: " + err.message);
+        }
+    });
+
+    async function readSerialLoop() {
+        let buffer = "";
+        try {
+            while (true) {
+                const { value, done } = await reader.read();
+                if (done) break;
+                buffer += value;
+                let lines = buffer.split("\n");
+                buffer = lines.pop();
+
+                for (let line of lines) {
+                    let cleanLine = line.trim();
+                    if (cleanLine) {
+                        document.getElementById('manualCmd').value = cleanLine;
+                        processMicrobitCommand(cleanLine);
                     }
                 }
-            } catch (err) {
-                log("Serial read stream closed: " + err.message, "error");
             }
+        } catch (err) {
+            log("Read error: " + err.message);
+        }
+    }
+
+    function submitManual() {
+        const inputField = document.getElementById('manualCmd');
+        const cmd = inputField.value.trim();
+        if (cmd) {
+            processMicrobitCommand(cmd);
+            inputField.value = "";
+        }
+    }
+
+    function processMicrobitCommand(cmd) {
+        log(`Received: "${cmd}"`);
+        if (players.length === 0) return;
+
+        let target = players[activeIndex];
+        let upper = cmd.toUpperCase();
+
+        if (upper.includes("MULTIPLY")) {
+            let num = parseInt(upper.replace(/[^0-9]/g, '')) || 10;
+            target.score *= num;
+            log(`${target.name}'s score multiplied by ${num} -> ${target.score}`);
+        } else if (upper.includes("DIVIDE")) {
+            let num = parseInt(upper.replace(/[^0-9]/g, '')) || 2;
+            if (num !== 0) target.score = Math.round(target.score / num);
+            log(`${target.name}'s score divided by ${num} -> ${target.score}`);
+        } else if (upper.includes("ADD") || upper.includes("+")) {
+            let num = parseInt(upper.replace(/[^0-9-]/g, '')) || 10;
+            target.score += num;
+            log(`Added ${num} to ${target.name} -> ${target.score}`);
+        } else if (upper.includes("SUB")) {
+            let num = parseInt(upper.replace(/[^0-9]/g, '')) || 10;
+            target.score -= num;
+            log(`Subtracted ${num} from ${target.name} -> ${target.score}`);
+        } else if (upper.includes("RESET")) {
+            target.score = 0;
+            log(`Reset ${target.name}'s score to 0`);
+        } else {
+            let num = parseInt(upper.replace(/[^0-9-]/g, '')) || 10;
+            target.score += num;
+            log(`Default add ${num} to ${target.name} -> ${target.score}`);
         }
 
-        // WebUSB Fallback Connection (For raw WebUSB HID endpoints)
-        document.getElementById('connectUsbBtn').addEventListener('click', async () => {
-            if (!('usb' in navigator)) {
-                log("WebUSB is not supported in this browser.", "error");
-                return;
-            }
+        nextTurn();
+    }
 
-            try {
-                usbDevice = await navigator.usb.requestDevice({
-                    filters: [{ vendorId: 0x0D28 }]
-                });
+    render();
+</script>
 
-                await usbDevice.open();
-                if (usbDevice.configuration === null) {
-                    await usbDevice.selectConfiguration(1);
-                }
-
-                showConnectedStatus(`WebUSB: ${usbDevice.productName || 'micro:bit'}`);
-                log("WebUSB device opened!");
-
-                // Note on CDC Protected Class handling:
-                // If interface 0 is protected by OS serial drivers, notify user to use WebSerial
-                try {
-                    await usbDevice.claimInterface(0);
-                    log("Claimed interface 0 successfully.");
-                } catch (claimErr) {
-                    log("Notice: CDC Serial interface is claimed by OS driver. Use 'Connect WebSerial' button above to stream data cleanly on Chrome/Chromebook!", "error");
-                }
-            } catch (err) {
-                log("WebUSB connection error: " + err.message, "error");
-            }
-        });
-
-        function showConnectedStatus(msg) {
-            statusBanner.classList.remove('hidden');
-            statusText.textContent = msg;
-        }
-
-        async function disconnectHardware() {
-            if (serialReader) {
-                await serialReader.cancel();
-                serialReader = null;
-            }
-            if (serialPort) {
-                await serialPort.close();
-                serialPort = null;
-            }
-            if (usbDevice) {
-                await usbDevice.close();
-                usbDevice = null;
-            }
-            statusBanner.classList.add('hidden');
-            log("Hardware disconnected.");
-        }
-
-        // Initial render
-        render();
-    </script>
 </body>
 </html>
